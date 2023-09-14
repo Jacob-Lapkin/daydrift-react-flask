@@ -13,14 +13,14 @@ load_dotenv()
 
 # Define your desired data structure.
 class DayDriftParser(BaseModel):
-    title: str = Field(description="A fun and enthusiastic short title for the user's exercise adventure that will be shown to the user. This should be unique and relevant.")
+    title: str = Field(description="A short unique/clever title for the adventure exercise that does not mention the zip code. Example: Beachin exercise on the coast.")
     totalCalories: int = Field(description="The estimated total calories burned during the entirety of the exercise adventure. This should consider the duration and intensity of the workouts.")
     duration: int = Field(description="The duration of the exercise adventure in terms of minutes")
     waterQuantity: int = Field(description="The quantity of water that the user should drink during entirety of the adventure in milliliters")
     safetyPrecautions: str = Field('exercise-related safety tips that are relevant to their specific location.')
     adventureSubtitles: List = Field(description="List of adventure subtitles that give insights and highlights to what the step of the excercise adventure entails. List Length should should be the same length as adventures. Remember each subtitle should be an item in the list.")
-    adventures: List = Field(description="List of steps in the excercise adventure. Each step should be 50 words")
-
+    adventures: List = Field(description="List of steps in the excercise adventure. Each step should be 50 words where total adventure is around 250 words")
+    location: str = Field(description="The location of the adventure. If within the united states then format 'City, State' otherwise 'City, Country'")
 # Set up a parser + inject instructions into the prompt template.
 parser = PydanticOutputParser(pydantic_object=DayDriftParser)
 
@@ -39,6 +39,7 @@ class DayDrift:
         template = """
                     As an Exercise Adventure Assistant, you specialize in crafting location-specific exercise journeys. When designing, remember:
 
+                    - Do no mention the zip code in the title
                     - Choose specific locations: parks, beaches, trails, etc
                     - Make steps detailed and distinct.
                     - Aim for diverse adventures.

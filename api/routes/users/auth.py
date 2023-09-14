@@ -6,6 +6,7 @@ from sendgrid.helpers.mail import Mail
 import random
 import datetime
 from dotenv import load_dotenv
+from flask_jwt_extended import jwt_required, get_jwt_identity
 import os
 
 load_dotenv()
@@ -16,7 +17,6 @@ auth_bp = Blueprint('auth_bp', __name__)
 @auth_bp.route('/register', methods=['POST'])
 def register():
     try:
-        mail = current_app.mail
         db = current_app.db
         # get data
         data = request.get_json()
@@ -66,6 +66,12 @@ def register():
             }, 
             "financial": {
                 "tokenCount": tokens,
+            }, 
+            "preferences": {
+                "defaultLocation":None, 
+                "defaultDuration":None, 
+                "defaultRadius": None, 
+                "defaultIntensity":None
             }
         }    
 
@@ -103,7 +109,7 @@ def login():
 
         # Check if all required data is provided
         if not email or not password:
-            return jsonify({"message": "Error", "error": "Email or password not provided"}), 400
+            return jsonify({"message": "Error", "error": "Email or password not provided. Please try again with both required fields."}), 400
 
         # Query for the user
         user = db.users.find_one({'personal_info.email': email})
@@ -118,7 +124,7 @@ def login():
 
         # Check if password matches the hash in the database
         if not check_password_hash(user["authentication"]["password"], password):
-            return jsonify({"message": "Error", "error": "Incorrect password"}), 401
+            return jsonify({"message": "Error", "error": "Incorrect password. Please check your password and try again."}), 401
 
         # Update the last login date for the user
         db.users.update_one({'_id': user['_id']}, {"$set": {"authentication.lastLoginDate": datetime.datetime.utcnow()}})
@@ -129,7 +135,7 @@ def login():
         intro_completed = user["user_progress"]["introCompleted"]
         username = user["personal_info"]["username"]
         email = user["personal_info"]["email"]
-
+        preferences = user['preferences']
         # Generate JWT tokens
         token = create_access_token(identity=str(user["_id"]))
         refresh_token = create_refresh_token(identity=str(user["_id"]))
@@ -144,7 +150,8 @@ def login():
                 "confirmedRegistration": confirmed_registration,
                 "introCompleted": intro_completed,
                 "username": username,
-                "email": email
+                "email": email, 
+                "preferences": preferences
             }
         }
 
@@ -153,6 +160,14 @@ def login():
     except Exception as e:
         current_app.logger.error(f"Error during login: {e}")
         return jsonify({"message": "Error", "error": "An unexpected server error occurred."}), 500
+
+
+@auth_bp.route('/verify-token', methods=['GET'])
+@jwt_required()   # This ensures the route is protected by JWT and the token is valid
+def verify_token():
+    current_user_id = get_jwt_identity()  # this gets the identity from the token
+    return jsonify(isValid=True, user=current_user_id), 200
+
 
 @auth_bp.route('/confirm-registration', methods=['POST'])
 def confirm_registration():

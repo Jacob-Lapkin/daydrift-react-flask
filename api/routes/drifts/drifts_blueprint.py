@@ -8,18 +8,19 @@ load_dotenv()
 drifts_bp = Blueprint("drifts_bp", __name__)
 
 @drifts_bp.route('/drifts', methods=["GET"])
+@jwt_required()
 def drifts():
     try:
         # get query parameters
         data = request.args
-        location = data.get("location", "Santa Monica, California")
+        location = data.get("location", "90272")
         duration = data.get("duration", 2)
         radius = data.get("radius", 5)
         intensity = data.get("intensity", 99)
         model = data.get('model', 'gpt-3.5-turbo')
 
         # initialize day drift
-        day_drift = DayDrift(location=location, duration=duration, radius=radius, intensity=intensity, text_temp=0.1, model=model)
+        day_drift = DayDrift(location=location, duration=duration, radius=radius, intensity=intensity, text_temp=0.2, model=model)
 
         # check if all parameters exist
         if not all([location, duration, radius]):
@@ -35,7 +36,7 @@ def drifts():
         duration = result.duration
         water_quantity = result.waterQuantity
         safety_precautions = result.safetyPrecautions
-
+        location_parsed = result.location
         if len(adventure_subtitles) != len(adventures):
             return jsonify({"message": "Error", "error": "Server could not load adventure details"}), 500
 
@@ -50,7 +51,8 @@ def drifts():
             "totalCalories":total_calories, 
             "duration": duration, 
             "waterQuantity":water_quantity, 
-            "safetyPrecautions":safety_precautions
+            "safetyPrecautions":safety_precautions, 
+            "location": location_parsed
         }
 
         response = {
