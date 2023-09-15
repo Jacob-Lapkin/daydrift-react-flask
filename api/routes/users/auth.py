@@ -8,6 +8,7 @@ import datetime
 from dotenv import load_dotenv
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import os
+import time
 
 load_dotenv()
 
@@ -162,6 +163,14 @@ def login():
         return jsonify({"message": "Error", "error": "An unexpected server error occurred."}), 500
 
 
+@auth_bp.route('/refresh-token', methods=["POST"])
+@jwt_required(refresh=True)
+def refresh_token():
+    identity = get_jwt_identity()
+    token = create_access_token(identity=identity)
+    response = {'message':"Success", "token":token}
+    return jsonify(response), 200
+
 @auth_bp.route('/verify-token', methods=['GET'])
 @jwt_required()   # This ensures the route is protected by JWT and the token is valid
 def verify_token():
@@ -233,6 +242,7 @@ def resend_code():
     except Exception as e:
         current_app.logger.error(f"Error resending confirmation code: {e}")
         return jsonify({"message": "Error", "error": "An unexpected server error occurred. Please try again."}), 500
+
 
 
 @auth_bp.route('/test', methods=['POST'])

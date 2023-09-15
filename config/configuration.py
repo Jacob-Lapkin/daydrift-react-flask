@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import os
+from datetime import timedelta
 
 load_dotenv()
 
@@ -9,7 +10,7 @@ class Config:
     PORT = 5000
     SECRET_KEY = 'aslkjhas3'
     JWT_SECRET_KEY = 'your-jwt-secret-key'
-
+    JWT_ACCESS_TOKEN_EXPIRES= timedelta(hours=1)
 class Development(Config):
     HOST = '127.0.0.1'
     # If you have specific mail settings for development, add them here
