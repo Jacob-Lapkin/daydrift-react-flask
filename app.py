@@ -8,6 +8,7 @@ flask_env = os.getenv("FLASK_ENV")
 
 app = create_app(flask_env)
 
+# setting run configs
 debug = app.config['DEBUG']
 host = app.config['HOST']
 port = app.config['PORT']
