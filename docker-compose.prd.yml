@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  daydrift-flask:
+    platform: linux/amd64
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    image: us-west2-docker.pkg.dev/devworks-395322/daydrift-flask/daydrift-flask:prod

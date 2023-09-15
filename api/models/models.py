@@ -1,6 +1,9 @@
 from pymongo import MongoClient
 
-client = MongoClient('mongodb://localhost:27017/')
+def database(client):
+    client = MongoClient(client)
 
-db = client['daydrift']
+    db = client['daydrift']
+    return db
+
 

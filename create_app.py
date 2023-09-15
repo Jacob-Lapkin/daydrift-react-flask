@@ -3,7 +3,7 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from config.configuration import Development, Production
 from api.routes.parent import parent_bp
-from api.models.models import db
+from api.models.models import database
 
 cors = CORS()
 jwt = JWTManager()
@@ -30,8 +30,9 @@ def create_app(config_mode='development'):
     # jwt manager
     jwt.init_app(app)
 
+    client = app.config['DATABASE_CLIENT']
     # init database
-    app.db = db
+    app.db = database(client)
 
     @app.route('/home', methods=['GET'])
     def home():
