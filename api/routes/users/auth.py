@@ -14,7 +14,6 @@ load_dotenv()
 
 auth_bp = Blueprint('auth_bp', __name__)
 
-
 @auth_bp.route('/register', methods=['POST'])
 def register():
     try:
@@ -41,8 +40,8 @@ def register():
         if user_name:
             return jsonify({"message": "Error", "error":"username already exists"}), 400
 
-        # create default token count
-        tokens = 100
+        # create default credits count
+        initial_credits = 100
 
         # generate password hash
         hashed_password = generate_password_hash(password)
@@ -66,7 +65,7 @@ def register():
                 "introCompleted": False
             }, 
             "financial": {
-                "tokenCount": tokens,
+                "creditCount": initial_credits,
             }, 
             "preferences": {
                 "defaultLocation":None, 
@@ -131,7 +130,7 @@ def login():
         db.users.update_one({'_id': user['_id']}, {"$set": {"authentication.lastLoginDate": datetime.datetime.utcnow()}})
 
         # Extract user token count and other properties
-        token_count = user["financial"]["tokenCount"]
+        credit_count = user["financial"]["creditCount"]
         confirmed_registration = user["authentication"]["confirmedRegistration"]
         intro_completed = user["user_progress"]["introCompleted"]
         username = user["personal_info"]["username"]
@@ -147,7 +146,7 @@ def login():
             "data": {
                 "token": token,
                 "refreshToken": refresh_token,
-                "tokenCount": token_count,
+                "creditCount": credit_count,
                 "confirmedRegistration": confirmed_registration,
                 "introCompleted": intro_completed,
                 "username": username,
