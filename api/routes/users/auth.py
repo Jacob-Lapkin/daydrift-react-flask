@@ -68,7 +68,8 @@ def register():
                 "creditCount": initial_credits,
             }, 
             "preferences": {
-                "defaultLocation":None, 
+                "defaultLatitude":None, 
+                "defaultLongitude":None, 
                 "defaultDuration":None, 
                 "defaultRadius": None, 
                 "defaultIntensity":None

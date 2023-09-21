@@ -17,7 +17,8 @@ def preferences():
 
         # get data to update
         data = request.get_json()
-        location = data.get("location", None)
+        latitude = data.get("latitude", None)
+        longitude = data.get("longitude", None)
         duration = data.get("duration", None)
         intensity = data.get('intensity', None)
         radius = data.get('radius', None)  # Adding radius if you need it
@@ -25,8 +26,10 @@ def preferences():
         # Use a dictionary to hold the fields you want to update.
         update_fields = {}
 
-        if location:
-            update_fields["preferences.defaultLocation"] = location
+        if latitude:
+            update_fields["preferences.defaultLatitude"] = latitude
+        if longitude:
+            update_fields["preferences.defaultLongitude"] = longitude
         if duration:
             update_fields["preferences.defaultDuration"] = duration
         if intensity:

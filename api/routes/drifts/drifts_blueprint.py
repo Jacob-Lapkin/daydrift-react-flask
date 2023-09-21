@@ -24,7 +24,7 @@ def drifts():
         radius = data.get("radius", None)
         intensity = data.get("intensity", None)
         model = data.get('model', 'gpt-3.5-turbo')
-
+        
         # get current user
         user = get_jwt_identity()
 
